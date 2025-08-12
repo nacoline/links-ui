@@ -1,0 +1,68 @@
+.media-live {
+    display: flex;
+
+    // .live-player-tools {
+    //     flex-basis: 300px;
+
+    //     .direction-item {
+    //         font-size: 30px !important;
+    //     }
+
+    //     .zoom-item {
+    //         font-size: 20px !important;
+    //     }
+    // }
+
+    .media-live-video {
+        position: relative;
+        flex: 1;
+
+        .media-tool {
+            position: absolute;
+            top: 4px;
+            right: 0;
+            z-index: 2;
+            display: flex;
+            opacity: 0;
+            transition: opacity 0.3s;
+
+            &.media-tool-show {
+                opacity: 1;
+            }
+
+            .tool-item {
+                margin-right: 6px;
+                padding: 4px;
+                color: #fff;
+                font-size: 14px;
+                background-color: hsla(0, 0%, 50.2%, 0.8);
+                border-radius: 2px;
+                cursor: pointer;
+
+                &:hover {
+                    background-color: hsla(0, 0%, 50.2%, 0.85);
+                }
+
+                &:active {
+                    background-color: hsla(0, 0%, 50.2%, 0.9);
+                }
+            }
+        }
+    }
+
+    .media-live-actions {
+        width: 300px;
+        margin-left: 10px;
+
+        .actions-tool {
+            padding: 0 40px 5px 40px;
+        }
+    }
+}
+
+.media-live-tool {
+    display: flex;
+    margin-bottom: 24px;
+    justify-content: space-between;
+    align-items: center;
+}
