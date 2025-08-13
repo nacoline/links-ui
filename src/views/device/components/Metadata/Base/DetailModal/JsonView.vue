@@ -10,8 +10,7 @@
 </template>
 
 <script setup lang="ts" name="JsonView">
-import 'vue3-json-viewer/dist/index.css';
-import { JsonViewer } from 'vue3-json-viewer';
+import JsonViewer from '@/components/JsonViewer/index.vue';
 
 const props = defineProps({
   value: {

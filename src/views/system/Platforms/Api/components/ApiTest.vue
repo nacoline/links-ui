@@ -127,8 +127,7 @@
 </template>
 
 <script setup lang="ts">
-import { JsonViewer } from 'vue3-json-viewer';
-import 'vue3-json-viewer/dist/index.css';
+import JsonViewer from '@/components/JsonViewer/index.vue';
 import type { apiDetailsType } from '../typing';
 import InputCard from './InputCard.vue';
 import { cloneDeep, toLower } from 'lodash';

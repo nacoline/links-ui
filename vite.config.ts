@@ -49,6 +49,7 @@ export default defineConfig(({ mode}) => {
                       vue: ['vue', 'vue-router', 'pinia']
                   },
               },
+
           },
       },
       plugins: [
@@ -97,6 +98,7 @@ export default defineConfig(({ mode}) => {
                 //   target: 'http://192.168.32.163:8844', //张季本地
                 //   target: 'http://120.77.179.54:8844', // 120测试
                 target: 'http://47.121.143.22:8848', // 本地开发环境
+                // target: 'http://127.0.0.1:4523/m2/6929137-6645289-default/334447462', // 本地开发环境
                 // target: 'http://192.168.33.1:8845', // 社区版开发环境
                 //   target: 'http://192.168.32.5:8848', // 刘本地
                 //   target: 'http://192.168.32.187:8844', // 谭本地
@@ -118,7 +120,7 @@ export default defineConfig(({ mode}) => {
           }
       },
       optimizeDeps: {
-          include: ['pinia', 'vue-router', 'axios', 'lodash-es', '@vueuse/core', 'echarts', 'dayjs'],
+          include: ['pinia', 'vue-router', 'axios', 'lodash-es', 'lodash', 'rxjs', '@vueuse/core', 'echarts', 'dayjs', '@ant-design/icons-vue'],
       }
   }
 })

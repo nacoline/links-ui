@@ -94,8 +94,7 @@
 </template>
 
 <script setup lang="ts">
-import { JsonViewer } from 'vue3-json-viewer';
-import 'vue3-json-viewer/dist/index.css';
+import JsonViewer from '@/components/JsonViewer/index.vue';
 import { queryLevel as queryLevel_api } from '@/api/rule-engine/config';
 import dayjs from 'dayjs';
 import { getWorkflowNotice } from '@/api/account/notificationRecord';

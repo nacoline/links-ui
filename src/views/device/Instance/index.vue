@@ -575,6 +575,28 @@ const columns = [
         },
     },
     {
+        key: 'laboratoryId',
+        dataIndex: 'laboratoryId',
+        title: '所属实验室',
+        hideInTable: true,
+        search: {
+            type: 'select',
+            options: () =>
+                new Promise((resolve) => {
+                    import('@/api/device/laboratory').then(({ LaboratoryAPI }) => {
+                        LaboratoryAPI.query({ paging: false }).then((resp: any) => {
+                            resolve(
+                                (resp.result || []).map((item: any) => ({
+                                    label: item.name,
+                                    value: item.id,
+                                })),
+                            );
+                        });
+                    });
+                }),
+        },
+    },
+    {
         title: '说明',
         dataIndex: 'describe',
         key: 'describe',

@@ -636,18 +636,100 @@ export default [
                 actions: ['query'],
               },
             ],
+          },
+          {
+            code: 'device/Laboratory',
+            name: '实验室',
+            owner: 'iot',
+            //parentId: '1-3',
+            id: '2c247f8f5f5f85cc35c02913f5dfde3e',
+            url: '/iot/device/Laboratory',
+            icon: 'icon-shiyanshi',
+            sortIndex: 4,
+            accessSupport: { text: "支持", value: "support" },
+            supportDataAccess: true,
+            assetType: 'laboratory',
+            showPage: ['device-laboratory', 'device-department', 'device-instance'],
+            permissions: [
+              {
+                permission: 'device-laboratory',
+                actions: ['query', 'save', 'update', 'delete'],
+              },
+              {
+                permission: 'device-department',
+                actions: ['query', 'save', 'update', 'delete'],
+              },
+              {
+                permission: 'device-instance',
+                actions: ['query'],
+              },
+            ],
             buttons: [
               {
                 id: 'view',
                 name: '查看',
                 permissions: [
                   {
-                    permission: 'device-product',
+                    permission: 'device-laboratory',
                     actions: ['query'],
                   },
                   {
                     permission: 'device-instance',
                     actions: ['query'],
+                  },
+                ],
+              },
+              {
+                id: 'add',
+                name: '新增',
+                permissions: [
+                  {
+                    permission: 'device-laboratory',
+                    actions: ['query', 'save'],
+                  },
+                ],
+              },
+              {
+                id: 'edit',
+                name: '编辑',
+                permissions: [
+                  {
+                    permission: 'device-laboratory',
+                    actions: ['query', 'update'],
+                  },
+                ],
+              },
+              {
+                id: 'delete',
+                name: '删除',
+                permissions: [
+                  {
+                    permission: 'device-laboratory',
+                    actions: ['query', 'delete'],
+                  },
+                ],
+              },
+              {
+                id: 'assign',
+                name: '分配设备',
+                permissions: [
+                  {
+                    permission: 'device-laboratory',
+                    actions: ['query', 'assign'],
+                  },
+                  {
+                    permission: 'device-instance',
+                    actions: ['query'],
+                  },
+                ],
+              },
+              {
+                id: 'remove',
+                name: '移除设备',
+                permissions: [
+                  {
+                    permission: 'device-laboratory',
+                    actions: ['query', 'remove'],
                   },
                 ],
               },
@@ -811,7 +893,7 @@ export default [
             owner: 'iot',
             //parentId: '1-3',
             id: 'bc83f18659982abb9ac1a96362fc3372',
-            sortIndex: 4,
+            sortIndex: 5,
             url: '/iot/device/Category',
             icon: 'icon-chanpinfenlei',
             accessSupport: { text: "支持", value: "support" },
@@ -1326,7 +1408,7 @@ export default [
             owner: 'iot',
             //parentId: '1-4',
             id: 'e0943d4c2fa539e89df1ff92e3379477',
-            sortIndex: 9,
+            sortIndex: 6,
             url: '/iot/link/firmware',
             icon: 'icon-yuanchengshengji',
             showPage: ['firmware-manager'],
