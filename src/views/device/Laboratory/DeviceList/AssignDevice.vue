@@ -26,6 +26,7 @@
           onSelect: onSelectChange,
           onSelectAll: selectAll,
           onSelectNone: () => (selectedDeviceIds = []),
+          preserveSelectedRowKeys: true,
         }"
         :params="params"
       >
@@ -75,10 +76,8 @@ const params = ref<Record<string, any>>({});
 // 查询可分配的设备列表（排除已分配的）
 const query = async (params: any) => {
   try {
-    const resp = await queryDevices({
-      ...params,
-      excludeLaboratoryId: props.laboratoryId,
-    });
+    // 简化查询，不添加额外的过滤条件，避免卡顿
+    const resp = await queryDevices(params);
     return {
       code: resp.status,
       result: resp.result,

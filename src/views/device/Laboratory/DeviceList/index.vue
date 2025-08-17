@@ -9,26 +9,24 @@
     <div class="device-list-container">
       <div class="device-list-header">
         <j-space>
-          <PermissionButton
+          <j-button
             type="primary"
             @click="handleAssignDevice"
-            hasPermission="device/Laboratory:assign"
           >
             <template #icon>
               <AIcon type="PlusOutlined" />
             </template>
             分配设备
-          </PermissionButton>
-          <PermissionButton
+          </j-button>
+          <j-button
             @click="handleRemoveDevice"
             :disabled="!selectedDeviceIds.length"
-            hasPermission="device/Laboratory:remove"
           >
             <template #icon>
               <AIcon type="DeleteOutlined" />
             </template>
             移除设备
-          </PermissionButton>
+          </j-button>
         </j-space>
       </div>
 
@@ -68,17 +66,16 @@
 
         <template #action="slotProps">
           <j-space>
-            <PermissionButton
+            <j-button
               @click="handleRemoveSingleDevice(slotProps)"
               type="link"
               style="padding: 0 5px"
               danger
-              hasPermission="device/Laboratory:remove"
             >
               <template #icon>
                 <AIcon type="DeleteOutlined" />
               </template>
-            </PermissionButton>
+            </j-button>
           </j-space>
         </template>
       </JProTable>

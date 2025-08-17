@@ -13,6 +13,15 @@
       :rules="rules"
       layout="vertical"
     >
+      <j-form-item label="实验室编码" name="code">
+        <j-input
+          v-model:value="form.code"
+          placeholder="系统自动生成"
+          :maxLength="64"
+          :disabled="true"
+        />
+      </j-form-item>
+
       <j-form-item label="实验室名称" name="name">
         <j-input
           v-model:value="form.name"
@@ -83,6 +92,7 @@ const loading = ref(false);
 
 
 const form = ref({
+  code: '',
   name: '',
   address: '',
   manager: '',
@@ -104,7 +114,9 @@ const rules = {
 // 初始化表单数据
 const initForm = () => {
   if (props.data.id) {
+    // 编辑模式：显示现有编码
     form.value = {
+      code: props.data.code || '',
       name: props.data.name || '',
       address: props.data.address || '',
       manager: props.data.manager || '',
@@ -113,7 +125,9 @@ const initForm = () => {
       describe: props.data.describe || '',
     };
   } else {
+    // 新增模式：编码字段留空，由后端自动生成
     form.value = {
+      code: '',
       name: '',
       address: '',
       manager: '',
@@ -138,10 +152,13 @@ const handleOk = async () => {
     loading.value = true;
 
     if (props.data.id) {
+      // 编辑模式：发送所有字段
       await LaboratoryAPI.update(props.data.id, form.value);
       onlyMessage('更新成功');
     } else {
-      await LaboratoryAPI.save(form.value);
+      // 新增模式：不发送编码字段，由后端自动生成
+      const { code, ...saveData } = form.value;
+      await LaboratoryAPI.save(saveData);
       onlyMessage('新增成功');
     }
 

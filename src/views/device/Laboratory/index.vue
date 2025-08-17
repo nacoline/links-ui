@@ -14,19 +14,24 @@
           sorts: [{ name: 'createTime', order: 'desc' }],
         }"
         :params="params"
+        :cardProps="{
+          bodyStyle: { padding: '12px' },
+        }"
+        :tableProps="{
+          scroll: { x: 1200 },
+        }"
       >
         <template #headerTitle>
           <j-space>
-            <PermissionButton
+            <j-button
               type="primary"
               @click="handleAdd"
-              hasPermission="device/Laboratory:add"
             >
               <template #icon>
                 <AIcon type="PlusOutlined" />
               </template>
               新增实验室
-            </PermissionButton>
+            </j-button>
           </j-space>
         </template>
 
@@ -54,40 +59,38 @@
 
         <template #action="slotProps">
           <j-space>
-            <PermissionButton
+            <j-button
               @click="handleEdit(slotProps)"
               type="link"
               style="padding: 0 5px"
-              hasPermission="device/Laboratory:edit"
             >
               <template #icon>
                 <AIcon type="EditOutlined" />
               </template>
-            </PermissionButton>
-            <PermissionButton
+            </j-button>
+            <j-button
               @click="viewDevices(slotProps)"
               type="link"
               style="padding: 0 5px"
-              hasPermission="device/Laboratory:view"
             >
               <template #icon>
                 <AIcon type="SettingOutlined" />
               </template>
-            </PermissionButton>
-            <PermissionButton
-              :popConfirm="{
-                title: '确认删除该实验室？',
-                onConfirm: () => handleDelete(slotProps),
-              }"
-              type="link"
-              style="padding: 0 5px"
-              danger
-              hasPermission="device/Laboratory:delete"
+            </j-button>
+            <j-popconfirm
+              title="确认删除该实验室？"
+              @confirm="() => handleDelete(slotProps)"
             >
-              <template #icon>
-                <AIcon type="DeleteOutlined" />
-              </template>
-            </PermissionButton>
+              <j-button
+                type="link"
+                style="padding: 0 5px"
+                danger
+              >
+                <template #icon>
+                  <AIcon type="DeleteOutlined" />
+                </template>
+              </j-button>
+            </j-popconfirm>
           </j-space>
         </template>
       </JProTable>
