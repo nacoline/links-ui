@@ -23,12 +23,15 @@
         }"
         :rowSelection="{
           selectedRowKeys: selectedDeviceIds,
+          onChange: onSelectChange,
           onSelect: onSelectChange,
           onSelectAll: selectAll,
           onSelectNone: () => (selectedDeviceIds = []),
           preserveSelectedRowKeys: true,
+          rowKey: 'id',
         }"
         :params="params"
+        :rowKey="(record) => record.id"
       >
         <template #state="slotProps">
           <BadgeStatus
@@ -73,15 +76,33 @@ const selectedDeviceIds = ref<string[]>([]);
 const loading = ref(false);
 const params = ref<Record<string, any>>({});
 
+// 组件挂载时的调试信息
+onMounted(() => {
+  console.log('AssignDevice组件挂载，实验室ID:', props.laboratoryId);
+  console.log('设备查询API:', queryDevices);
+  console.log('实验室API:', LaboratoryAPI);
+});
+
 // 查询可分配的设备列表（排除已分配的）
 const query = async (params: any) => {
   try {
-    // 简化查询，不添加额外的过滤条件，避免卡顿
-    const resp = await queryDevices(params);
+    console.log('查询设备列表，参数:', params);
+    
+    // 使用正确的API路径
+    const resp = await queryDevices({
+      ...params,
+      paging: true,
+      pageSize: params.pageSize || 10,
+      pageIndex: params.current || 1,
+    });
+    
+    console.log('设备查询响应:', resp);
+    
     return {
-      code: resp.status,
-      result: resp.result,
-      status: resp.status,
+      code: resp.status || 200,
+      result: resp.result || [],
+      status: resp.status || 200,
+      total: resp.total || 0,
     };
   } catch (error) {
     console.error('查询设备列表失败:', error);
@@ -89,6 +110,7 @@ const query = async (params: any) => {
       code: 500,
       result: [],
       status: 500,
+      total: 0,
     };
   }
 };
@@ -99,31 +121,34 @@ const handleSearch = (searchParams: any) => {
 };
 
 // 选择变化
-const onSelectChange = (selectedRowKeys: string[]) => {
+const onSelectChange = (selectedRowKeys: string[], selectedRows: any[]) => {
   selectedDeviceIds.value = selectedRowKeys;
+  console.log('选中的设备IDs:', selectedDeviceIds.value);
+  console.log('选中的设备行:', selectedRows);
 };
 
 // 全选
 const selectAll = (selected: boolean, selectedRows: any[], changeRows: any[]) => {
   if (selected) {
-    selectedDeviceIds.value = [
-      ...selectedDeviceIds.value,
-      ...changeRows.map((item) => item.id),
-    ];
+    const newIds = changeRows.map((item) => item.id).filter(id => !selectedDeviceIds.value.includes(id));
+    selectedDeviceIds.value = [...selectedDeviceIds.value, ...newIds];
   } else {
-    selectedDeviceIds.value = selectedDeviceIds.value.filter(
-      (key) => !changeRows.find((item) => item.id === key),
-    );
+    const changeIds = changeRows.map((item) => item.id);
+    selectedDeviceIds.value = selectedDeviceIds.value.filter(id => !changeIds.includes(id));
   }
+  console.log('全选后的设备IDs:', selectedDeviceIds.value);
 };
 
 // 取消
 const handleCancel = () => {
+  selectedDeviceIds.value = [];
   emit('close');
 };
 
 // 确定
 const handleOk = async () => {
+  console.log('确认分配，选中的设备IDs:', selectedDeviceIds.value);
+  
   if (!selectedDeviceIds.value.length) {
     onlyMessage('请选择要分配的设备', 'warning');
     return;
@@ -131,12 +156,14 @@ const handleOk = async () => {
 
   try {
     loading.value = true;
+    console.log('调用分配API，实验室ID:', props.laboratoryId, '设备IDs:', selectedDeviceIds.value);
+    
     await LaboratoryAPI.assignDevice(props.laboratoryId, selectedDeviceIds.value);
     onlyMessage('分配成功');
     emit('save');
   } catch (error) {
     console.error('分配设备失败:', error);
-    onlyMessage('分配失败', 'error');
+    onlyMessage('分配失败: ' + (error.message || '未知错误'), 'error');
   } finally {
     loading.value = false;
   }
