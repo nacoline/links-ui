@@ -2,23 +2,19 @@
 export interface Laboratory {
   id: string;
   name: string;
-  departmentId?: string;
-  departmentName?: string;
+  address?: string;
+  manager?: string;
+  phone?: string;
+  email?: string;
   describe?: string;
   deviceCount?: number;
-  createTime?: number;
-  updateTime?: number;
-}
-
-// 科室类型定义
-export interface Department {
-  id: string;
-  name: string;
   parentId?: string;
-  describe?: string;
+  path?: string;
+  sortIndex?: number;
+  level?: number;
   createTime?: number;
   updateTime?: number;
-  children?: Department[];
+  children?: Laboratory[];
 }
 
 // 实验室设备关联类型定义

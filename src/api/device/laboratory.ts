@@ -64,39 +64,4 @@ export const LaboratoryAPI = {
     }),
 };
 
-// 科室管理API
-export const DepartmentAPI = {
-  // 获取科室列表
-  query: (params: any) =>
-    request('/device/department/_query', {
-      method: 'POST',
-      data: params,
-    }),
 
-  // 新增科室
-  save: (data: any) =>
-    request('/device/department', {
-      method: 'POST',
-      data,
-    }),
-
-  // 更新科室
-  update: (id: string, data: any) =>
-    request(`/device/department/${id}`, {
-      method: 'PUT',
-      data,
-    }),
-
-  // 删除科室
-  remove: (id: string) =>
-    request(`/device/department/${id}`, {
-      method: 'DELETE',
-    }),
-
-  // 获取科室树形结构
-  tree: (params?: any) =>
-    request('/device/department/_tree', {
-      method: 'GET',
-      params,
-    }),
-};

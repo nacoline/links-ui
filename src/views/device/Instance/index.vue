@@ -352,6 +352,7 @@ import {
     queryOrgThree,
 } from '@/api/device/product';
 import { queryTree } from '@/api/device/category';
+import { LaboratoryAPI } from '@/api/device/laboratory';
 import { useMenuStore } from '@/store/menu';
 import type { ActionsType } from './typings';
 import dayjs from 'dayjs';
@@ -490,6 +491,21 @@ const columns = [
                                 value: `accessProvider is ${item.id}`,
                             })),
                         );
+                    });
+                }),
+        },
+    },
+    {
+        key: 'laboratoryId',
+        dataIndex: 'laboratoryId',
+        title: '所属实验室',
+        hideInTable: true,
+        search: {
+            type: 'treeSelect',
+            options: () =>
+                new Promise((resolve) => {
+                    LaboratoryAPI.tree().then((resp: any) => {
+                        resolve(resp.result || []);
                     });
                 }),
         },

@@ -27,20 +27,11 @@
               </template>
               新增实验室
             </PermissionButton>
-            <PermissionButton
-              @click="handleDepartment"
-              hasPermission="device/Department:view"
-            >
-              <template #icon>
-                <AIcon type="TeamOutlined" />
-              </template>
-              科室管理
-            </PermissionButton>
           </j-space>
         </template>
 
-        <template #departmentName="slotProps">
-          <span>{{ slotProps.departmentName || '未分配' }}</span>
+        <template #type="slotProps">
+          <j-tag color="blue">实验室</j-tag>
         </template>
 
         <template #deviceCount="slotProps">
@@ -110,11 +101,7 @@
       @save="saveBtn"
     />
 
-    <!-- 科室管理弹窗 -->
-    <Department
-      v-if="departmentVisible"
-      @close="departmentVisible = false"
-    />
+
 
     <!-- 设备列表弹窗 -->
     <DeviceList
@@ -126,10 +113,9 @@
 </template>
 
 <script setup lang="ts">
-import { LaboratoryAPI, DepartmentAPI } from '@/api/device/laboratory';
+import { LaboratoryAPI } from '@/api/device/laboratory';
 import { onlyMessage } from '@/utils/comm';
 import Save from './Save/index.vue';
-import Department from './Department/index.vue';
 import DeviceList from './DeviceList/index.vue';
 import dayjs from 'dayjs';
 
@@ -137,7 +123,7 @@ const laboratoryRef = ref<Record<string, any>>({});
 const params = ref<Record<string, any>>({});
 const visible = ref<boolean>(false);
 const current = ref<Record<string, any>>({});
-const departmentVisible = ref<boolean>(false);
+
 const deviceListVisible = ref<boolean>(false);
 const currentLaboratory = ref<Record<string, any>>({});
 
@@ -177,10 +163,7 @@ const handleEdit = (record: any) => {
   visible.value = true;
 };
 
-// 科室管理
-const handleDepartment = () => {
-  departmentVisible.value = true;
-};
+
 
 // 查看设备列表
 const viewDevices = (laboratory: any) => {
@@ -223,19 +206,11 @@ const columns = [
     },
   },
   {
-    title: '所属科室',
-    dataIndex: 'departmentName',
-    key: 'departmentName',
+    title: '类型',
+    dataIndex: 'type',
+    key: 'type',
     scopedSlots: true,
-    search: {
-      type: 'treeSelect',
-      options: () =>
-        new Promise((resolve) => {
-          DepartmentAPI.tree().then((resp: any) => {
-            resolve(resp.result || []);
-          });
-        }),
-    },
+    width: 120,
   },
   {
     title: '设备数量',

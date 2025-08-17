@@ -21,14 +21,37 @@
         />
       </j-form-item>
 
-      <j-form-item label="所属科室" name="departmentId">
-        <j-tree-select
-          v-model:value="form.departmentId"
-          :tree-data="departmentOptions"
-          placeholder="请选择所属科室"
-          :field-names="{ children: 'children', label: 'name', value: 'id' }"
-          tree-default-expand-all
-          allow-clear
+
+
+      <j-form-item label="实验室地址" name="address">
+        <j-input
+          v-model:value="form.address"
+          placeholder="请输入实验室地址"
+          :maxLength="200"
+        />
+      </j-form-item>
+
+      <j-form-item label="负责人" name="manager">
+        <j-input
+          v-model:value="form.manager"
+          placeholder="请输入负责人"
+          :maxLength="50"
+        />
+      </j-form-item>
+
+      <j-form-item label="联系电话" name="phone">
+        <j-input
+          v-model:value="form.phone"
+          placeholder="请输入联系电话"
+          :maxLength="20"
+        />
+      </j-form-item>
+
+      <j-form-item label="邮箱" name="email">
+        <j-input
+          v-model:value="form.email"
+          placeholder="请输入邮箱"
+          :maxLength="100"
         />
       </j-form-item>
 
@@ -45,7 +68,7 @@
 </template>
 
 <script setup lang="ts">
-import { LaboratoryAPI, DepartmentAPI } from '@/api/device/laboratory';
+import { LaboratoryAPI } from '@/api/device/laboratory';
 import { onlyMessage } from '@/utils/comm';
 
 interface Props {
@@ -57,11 +80,14 @@ const emit = defineEmits(['close', 'save']);
 
 const formRef = ref();
 const loading = ref(false);
-const departmentOptions = ref<any[]>([]);
+
 
 const form = ref({
   name: '',
-  departmentId: undefined,
+  address: '',
+  manager: '',
+  phone: '',
+  email: '',
   describe: '',
 });
 
@@ -80,27 +106,25 @@ const initForm = () => {
   if (props.data.id) {
     form.value = {
       name: props.data.name || '',
-      departmentId: props.data.departmentId,
+      address: props.data.address || '',
+      manager: props.data.manager || '',
+      phone: props.data.phone || '',
+      email: props.data.email || '',
       describe: props.data.describe || '',
     };
   } else {
     form.value = {
       name: '',
-      departmentId: undefined,
+      address: '',
+      manager: '',
+      phone: '',
+      email: '',
       describe: '',
     };
   }
 };
 
-// 获取科室选项
-const getDepartmentOptions = async () => {
-  try {
-    const resp = await DepartmentAPI.tree();
-    departmentOptions.value = resp.result || [];
-  } catch (error) {
-    console.error('获取科室列表失败:', error);
-  }
-};
+
 
 // 取消
 const handleCancel = () => {
@@ -133,6 +157,5 @@ const handleOk = async () => {
 // 初始化
 onMounted(() => {
   initForm();
-  getDepartmentOptions();
 });
 </script>

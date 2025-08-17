@@ -649,14 +649,10 @@ export default [
             accessSupport: { text: "支持", value: "support" },
             supportDataAccess: true,
             assetType: 'laboratory',
-            showPage: ['device-laboratory', 'device-department', 'device-instance'],
+            showPage: ['device-laboratory', 'device-instance'],
             permissions: [
               {
                 permission: 'device-laboratory',
-                actions: ['query', 'save', 'update', 'delete'],
-              },
-              {
-                permission: 'device-department',
                 actions: ['query', 'save', 'update', 'delete'],
               },
               {
