@@ -1,3 +1,5 @@
+import type { RouteRecordRaw } from 'vue-router'
+
 export const LoginPath = '/user/login'
 export const InitHomePath = '/init-home'
 export const AccountCenterBindPath = '/account/center/bind'
@@ -30,30 +32,17 @@ export const AccountMenu = {
             },
             component: () => import('@/views/account/Center/index.vue')
         },
-        // {
-        //     path: '/account/NotificationSubscription',
-        //     name: 'account/NotificationSubscription',
-        //     code: 'account/NotificationSubscription',
-        //     meta: {
-        //         title: '通知订阅',
-        //         icon: '',
-        //         hideInMenu: false
-        //     },
-        //     component: () => import('@/views/account/NotificationSubscription/index.vue')
-        // },
-        // {
-        //     path: '/account/NotificationRecord',
-        //     name: 'account/NotificationRecord',
-        //     code: 'account/NotificationRecord',
-        //     meta: {
-        //         title: '通知记录',
-        //         icon: '',
-        //         hideInMenu: false
-        //     },
-        //     component: () => import('@/views/account/NotificationRecord/index.vue')
-        // },
     ]
 }
+
+const extraRoutes: RouteRecordRaw[] = [
+    {
+        path: '/laboratory/:id/devices',
+        name: 'laboratory-devices',
+        meta: { title: '实验室设备', hideInMenu: true },
+        component: () => import('@/views/device/Laboratory/DevicesPage/index.vue')
+    },
+]
 
 export default [
     { path: '/*', redirect: '/' },
@@ -92,4 +81,5 @@ export default [
         component: () => import('@/views/media/Device/Channel/Share/index.vue')
     },
     AccountMenu,
+    ...extraRoutes,
 ]

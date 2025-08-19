@@ -24,14 +24,14 @@
         :rowSelection="{
           selectedRowKeys: selectedDeviceIds,
           onChange: onSelectChange,
-          onSelect: onSelectChange,
           onSelectAll: selectAll,
-          onSelectNone: () => (selectedDeviceIds = []),
+          onSelectNone: () => (selectedDeviceIds.value = []),
           preserveSelectedRowKeys: true,
-          rowKey: 'id',
+          getCheckboxProps: (record: any) => ({ disabled: record.disabled === true })
         }"
         :params="params"
-        :rowKey="(record) => record.id"
+        rowKey="id"
+        model="TABLE"
       >
         <template #state="slotProps">
           <BadgeStatus
@@ -76,41 +76,77 @@ const selectedDeviceIds = ref<string[]>([]);
 const loading = ref(false);
 const params = ref<Record<string, any>>({});
 
-// 组件挂载时的调试信息
-onMounted(() => {
-  console.log('AssignDevice组件挂载，实验室ID:', props.laboratoryId);
-  console.log('设备查询API:', queryDevices);
-  console.log('实验室API:', LaboratoryAPI);
+// 已分配设备ID缓存
+const assignedIds = ref<string[]>([]);
+
+// 初始化已分配设备列表
+const loadAssigned = async () => {
+  try {
+    const resp = await LaboratoryAPI.devices(props.laboratoryId, { paging: false });
+    assignedIds.value = (resp?.result || []).map((m: any) => m.deviceId).filter(Boolean);
+  } catch (e) {
+    assignedIds.value = [];
+  }
+};
+
+onMounted(async () => {
+  await loadAssigned();
 });
 
 // 查询可分配的设备列表（排除已分配的）
 const query = async (params: any) => {
   try {
-    console.log('查询设备列表，参数:', params);
-    
-    // 使用正确的API路径
+    const pageSize = params.pageSize || 10;
+    const pageIndex = params.current || 1;
+
+    // 基础 terms
+    const terms: any[] = [];
+    if (assignedIds.value.length) {
+      // 使用 not-in 语法，直接生成 NOT IN 条件
+      terms.push({
+        column: 'id$not-in',
+        value: assignedIds.value,
+      });
+    }
+
     const resp = await queryDevices({
       ...params,
+      terms: [...(params?.terms || []), ...terms],
       paging: true,
-      pageSize: params.pageSize || 10,
-      pageIndex: params.current || 1,
+      pageSize,
+      pageIndex,
     });
-    
-    console.log('设备查询响应:', resp);
-    
+
+    const data = Array.isArray(resp?.result?.data) ? resp.result.data : (resp?.result || []);
+    const total = typeof resp?.result?.total === 'number' ? resp.result.total : (resp?.total || 0);
+
+    // 标记禁用：已分配的设备禁用选择
+    const resultData = data.map((item: any) => ({
+      ...item,
+      disabled: assignedIds.value.includes(item.id),
+    }));
+
     return {
       code: resp.status || 200,
-      result: resp.result || [],
       status: resp.status || 200,
-      total: resp.total || 0,
+      result: {
+        data: resultData,
+        pageIndex: pageIndex - 1,
+        pageSize,
+        total,
+      },
     };
   } catch (error) {
     console.error('查询设备列表失败:', error);
     return {
       code: 500,
-      result: [],
       status: 500,
-      total: 0,
+      result: {
+        data: [],
+        pageIndex: 0,
+        pageSize: params?.pageSize || 10,
+        total: 0,
+      },
     };
   }
 };

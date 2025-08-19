@@ -27,6 +27,12 @@
             </template>
             移除设备
           </j-button>
+          <j-button @click="onRefresh">
+            <template #icon>
+              <AIcon type="ReloadOutlined" />
+            </template>
+            刷新
+          </j-button>
         </j-space>
       </div>
 
@@ -39,10 +45,13 @@
         }"
         :rowSelection="{
           selectedRowKeys: selectedDeviceIds,
-          onSelect: onSelectChange,
+          onChange: onSelectChange,
           onSelectAll: selectAll,
-          onSelectNone: () => (selectedDeviceIds = []),
+          onSelectNone: () => (selectedDeviceIds.value = []),
+          preserveSelectedRowKeys: true,
         }"
+        rowKey="id"
+        model="TABLE"
       >
         <template #state="slotProps">
           <BadgeStatus
@@ -93,6 +102,7 @@
 
 <script setup lang="ts">
 import { LaboratoryAPI } from '@/api/device/laboratory';
+import { query as queryDevices } from '@/api/device/instance';
 import { onlyMessage } from '@/utils/comm';
 import AssignDevice from './AssignDevice.vue';
 import BadgeStatus from '@/components/BadgeStatus/index.vue';
@@ -103,27 +113,53 @@ interface Props {
 }
 
 const props = defineProps<Props>();
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close', 'changed']);
 
 const deviceRef = ref<Record<string, any>>({});
 const selectedDeviceIds = ref<string[]>([]);
 const assignDeviceVisible = ref(false);
 
-// 查询实验室下的设备列表
+// 查询实验室下的设备列表（先查关联，再批量查详情）
 const query = async (params: any) => {
   try {
-    const resp = await LaboratoryAPI.devices(props.laboratory.id, params);
+    // 1) 获取该实验室已分配的设备ID
+    const mappingResp = await LaboratoryAPI.devices(props.laboratory.id, { paging: false });
+    const idList = (mappingResp?.result || []).map((m: any) => m.deviceId).filter(Boolean);
+    if (!idList.length) {
+      return { code: 200, status: 200, result: { data: [], pageIndex: 0, pageSize: params?.pageSize || 10, total: 0 } };
+    }
+
+    // 2) 用设备ID做 in 查询设备详情
+    const pageSize = params?.pageSize || 10;
+    const pageIndex = params?.current || 1;
+    const resp = await queryDevices({
+      pageSize,
+      pageIndex,
+      terms: [
+        { column: 'id', termType: 'in', value: idList },
+      ],
+      sorts: params?.sorts || [{ name: 'createTime', order: 'desc' }],
+    });
+
+    const data = Array.isArray(resp?.result?.data) ? resp.result.data : (resp?.result || []);
+    const total = typeof resp?.result?.total === 'number' ? resp.result.total : (resp?.total || 0);
+
     return {
-      code: resp.status,
-      result: resp.result,
-      status: resp.status,
+      code: resp?.status || 200,
+      status: resp?.status || 200,
+      result: {
+        data,
+        pageIndex: pageIndex - 1,
+        pageSize,
+        total,
+      },
     };
   } catch (error) {
     console.error('查询设备列表失败:', error);
     return {
       code: 500,
-      result: [],
       status: 500,
+      result: { data: [], pageIndex: 0, pageSize: params?.pageSize || 10, total: 0 },
     };
   }
 };
@@ -140,6 +176,7 @@ const handleRemoveDevice = async () => {
     onlyMessage('移除成功');
     selectedDeviceIds.value = [];
     onRefresh();
+    emit('changed');
   } catch (error) {
     onlyMessage('移除失败', 'error');
   }
@@ -151,6 +188,7 @@ const handleRemoveSingleDevice = async (device: any) => {
     await LaboratoryAPI.removeDevice(props.laboratory.id, [device.id]);
     onlyMessage('移除成功');
     onRefresh();
+    emit('changed');
   } catch (error) {
     onlyMessage('移除失败', 'error');
   }
@@ -160,6 +198,7 @@ const handleRemoveSingleDevice = async (device: any) => {
 const saveAssignDevice = () => {
   assignDeviceVisible.value = false;
   onRefresh();
+  emit('changed');
 };
 
 // 选择变化

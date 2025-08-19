@@ -20,6 +20,7 @@
         :tableProps="{
           scroll: { x: 1200 },
         }"
+        model="TABLE"
       >
         <template #headerTitle>
           <j-space>
@@ -32,6 +33,12 @@
               </template>
               新增实验室
             </j-button>
+            <j-button @click="onRefresh">
+              <template #icon>
+                <AIcon type="ReloadOutlined" />
+              </template>
+              刷新
+            </j-button>
           </j-space>
         </template>
 
@@ -43,7 +50,6 @@
           <j-button
             type="link"
             @click="viewDevices(slotProps)"
-            :disabled="!slotProps.deviceCount"
           >
             {{ slotProps.deviceCount || 0 }} 台
           </j-button>
@@ -111,6 +117,7 @@
       v-if="deviceListVisible"
       :laboratory="currentLaboratory"
       @close="deviceListVisible = false"
+      @changed="onRefresh"
     />
   </page-container>
 </template>
@@ -121,6 +128,7 @@ import { onlyMessage } from '@/utils/comm';
 import Save from './Save/index.vue';
 import DeviceList from './DeviceList/index.vue';
 import dayjs from 'dayjs';
+import { useRouter } from 'vue-router';
 
 const laboratoryRef = ref<Record<string, any>>({});
 const params = ref<Record<string, any>>({});
@@ -196,6 +204,15 @@ const onRefresh = () => {
   laboratoryRef.value?.reload();
 };
 
+// 跳转到实验室设备列表页面
+const router = useRouter();
+const goLabDevicesPage = (lab: any) => {
+  router.push({
+    path: `/laboratory/${lab.id}/devices`,
+    query: { name: lab.name },
+  })
+}
+
 // 表格列配置
 const columns = [
   {
@@ -207,6 +224,7 @@ const columns = [
       type: 'string',
       first: true,
     },
+    scopedSlots: true,
   },
   {
     title: '类型',
