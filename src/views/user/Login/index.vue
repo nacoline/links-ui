@@ -283,9 +283,9 @@ const onFinish = async () => {
             if (userResp.result?.username === 'admin') {
               const resp: any = await getInitSet();
               if (resp.status === 200 && !resp.result.length) {
-                window.location.href = '/#/init-home';
-                // router.push('/init-home')
-                return;
+                // window.location.href = '/#/init-home';
+                // admin首登可手动进入初始化页面
+                // 保持登录后直接进入首页
               }
             }
           } else {

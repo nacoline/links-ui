@@ -26,7 +26,8 @@ const save = async (data: any) => {
         onlyMessage('配置成功');
         const resp: any = await initPage();
         if (resp.status === 200 && !resp.result.length) {
-            window.location.href = '/#/init-home';
+            // window.location.href = '/#/init-home';
+            window.location.href = '/';
         } else {
             window.location.href = '/';
         }
