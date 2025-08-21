@@ -37,10 +37,17 @@ export const AccountMenu = {
 
 const extraRoutes: RouteRecordRaw[] = [
     {
-        path: '/laboratory/:id/devices',
-        name: 'laboratory-devices',
-        meta: { title: '实验室设备', hideInMenu: true },
-        component: () => import('@/views/device/Laboratory/DevicesPage/index.vue')
+        path: '/laboratory',
+        component: () => import('@/components/Layout/BasicLayoutPage.vue'),
+        meta: { hideInMenu: true },
+        children: [
+            {
+                path: ':id/devices',
+                name: 'laboratory-devices',
+                meta: { title: '实验室设备', hideInMenu: true },
+                component: () => import('@/views/device/Laboratory/DevicesPage/index.vue')
+            }
+        ]
     },
 ]
 

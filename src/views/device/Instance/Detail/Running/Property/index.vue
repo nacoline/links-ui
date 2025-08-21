@@ -60,11 +60,8 @@
                     </template>
                 </j-space>
             </template>
-            <div>111111111111111111111111111</div>
         </JProTable>
-        <div>22222222222222222222222</div>
     </j-spin>
-    <div>33333333333333333333333</div>
     <Save v-if="editVisible" @close="editVisible = false" :data="currentInfo" />
     <Indicators
         v-if="indicatorVisible"

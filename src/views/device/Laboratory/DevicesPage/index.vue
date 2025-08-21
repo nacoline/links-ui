@@ -1,23 +1,5 @@
 <template>
   <page-container>
-    <template #header>
-      <j-space>
-        <j-button type="default" @click="goBack">
-          <template #icon>
-            <AIcon type="ArrowLeftOutlined" />
-          </template>
-          返回
-        </j-button>
-        <span style="font-weight: 600; margin-left: 8px">{{ labName || '实验室' }} - 设备</span>
-        <j-button @click="onRefresh">
-          <template #icon>
-            <AIcon type="ReloadOutlined" />
-          </template>
-          刷新
-        </j-button>
-      </j-space>
-    </template>
-
     <FullPage>
       <JProTable
         ref="deviceRef"
@@ -27,16 +9,54 @@
           sorts: [{ name: 'createTime', order: 'desc' }],
         }"
         rowKey="id"
-        model="TABLE"
+        model="CARD"
+        :gridColumn="4"
       >
-        <template #card="item">
-          <div class="device-card" @click="toDetail(item.id)" :title="item.name">
-            <div class="device-card-title">{{ item.name }}</div>
-            <div class="device-card-sub">{{ item.productName }}</div>
-            <div class="device-card-state">
-              <BadgeStatus :status="item.state?.value" :text="item.state?.text" />
-            </div>
-          </div>
+        <template #headerTitle>
+          <j-space>
+            <j-button type="default" @click="goBack">
+              <template #icon>
+                <AIcon type="ArrowLeftOutlined" />
+              </template>
+              返回
+            </j-button>
+            <span style="font-weight: 600; margin-left: 8px">{{ labName || '实验室' }} - 设备</span>
+            <j-button @click="onRefresh">
+              <template #icon>
+                <AIcon type="ReloadOutlined" />
+              </template>
+              刷新
+            </j-button>
+          </j-space>
+        </template>
+
+        <template #card="slotProps">
+          <CardBox
+            :value="slotProps"
+            @click="toDetail(slotProps.id)"
+            :status="slotProps.state?.value"
+            :statusText="slotProps.state?.text"
+            :statusNames="{ online: 'processing', offline: 'error', notActive: 'warning' }"
+          >
+            <template #img>
+              <img :width="80" :height="80" :src="slotProps?.photoUrl || getImage('/device/instance/device-card.png')" />
+            </template>
+            <template #content>
+              <Ellipsis style="width: calc(100% - 100px); margin-bottom: 18px;">
+                <span style="font-size: 16px; font-weight: 600">{{ slotProps.name }}</span>
+              </Ellipsis>
+              <j-row>
+                <j-col :span="12">
+                  <div class="card-item-content-text">设备类型</div>
+                  <div>{{ slotProps.deviceType?.text || '-' }}</div>
+                </j-col>
+                <j-col :span="12">
+                  <div class="card-item-content-text">产品名称</div>
+                  <Ellipsis style="width: 100%">{{ slotProps.productName || '-' }}</Ellipsis>
+                </j-col>
+              </j-row>
+            </template>
+          </CardBox>
         </template>
 
         <template #state="slotProps">
@@ -62,8 +82,10 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router'
 import { LaboratoryAPI } from '@/api/device/laboratory'
-import { queryDeviceList } from '@/api/edge/resource'
+import { query as queryDevices } from '@/api/device/instance'
 import BadgeStatus from '@/components/BadgeStatus/index.vue'
+import CardBox from '@/components/CardBox/index.vue'
+import { getImage } from '@/utils/comm'
 import dayjs from 'dayjs'
 
 const route = useRoute()
@@ -77,7 +99,6 @@ const onRefresh = () => deviceRef.value?.reload()
 const goBack = () => router.back()
 
 const toDetail = (deviceId: string) => {
-  // 跳转到设备详情
   router.push(`/iot/device/Instance/detail/${deviceId}`)
 }
 
@@ -93,7 +114,7 @@ const query = async (params: any) => {
     const pageSize = params?.pageSize || 12
     const pageIndex = params?.current || 1
 
-    const resp = await queryDeviceList({
+    const resp = await queryDevices({
       pageSize,
       pageIndex,
       terms: [ { column: 'id', termType: 'in', value: idList } ],

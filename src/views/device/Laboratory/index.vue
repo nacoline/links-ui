@@ -99,6 +99,9 @@
             </j-popconfirm>
           </j-space>
         </template>
+        <template #name="slotProps">
+          <j-button type="link" @click="goLabDevicesPage(slotProps)">{{ slotProps.name }}</j-button>
+        </template>
       </JProTable>
     </FullPage>
 
